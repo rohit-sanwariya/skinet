@@ -1,11 +1,11 @@
 
 
-namespace API.Models
+namespace Core.Models
 {
     public class Product
     {
         public int Id { get; set; }
 
-        public int MyProperty { get; set; }
+        public int Name { get; set; }
     }
 }
