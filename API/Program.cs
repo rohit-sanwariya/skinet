@@ -4,7 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
+ 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
@@ -24,5 +24,22 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+var context =  services.GetRequiredService<ApplicationDbContext>();
+var logger = services.GetRequiredService<ILoggerFactory>(); 
+try
+{
+    await context.Database.MigrateAsync();
+    await StoreContextSeed.SeedData(context,logger);
+}
+catch (System.Exception)
+{
+    
+    throw;
+}
+
+
 
 app.Run();

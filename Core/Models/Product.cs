@@ -6,7 +6,7 @@ namespace Core.Models;
 
 public class Product : SkinetBaseModel
 {
-    public string Desciption { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public string PictureUrl { get; set; } = string.Empty;
 
     public decimal Price { get; set; }
@@ -17,7 +17,7 @@ public class Product : SkinetBaseModel
     [ForeignKey("ProductType")]
     public int ProductTypeId { get; set; }
     [ForeignKey("ProductBrand")]
-    public int ProductBrandId { get; set; }
+    public int ProductBrandId { get; set; } 
 }
 
  
