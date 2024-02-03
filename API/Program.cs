@@ -4,14 +4,20 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
- 
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProduct, ProductRepository>();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+        )
+ 
+    );
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,17 +33,18 @@ app.MapControllers();
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
-var context =  services.GetRequiredService<ApplicationDbContext>();
-var logger = services.GetRequiredService<ILoggerFactory>(); 
+var context = services.GetRequiredService<ApplicationDbContext>();
+var logger = services.GetRequiredService<ILoggerFactory>();
 try
 {
     await context.Database.MigrateAsync();
-    await StoreContextSeed.SeedData(context,logger);
+    await StoreContextSeed.SeedData(context, logger);
 }
-catch (System.Exception)
+catch (Exception e)
 {
-    
-    throw;
+
+    var pLogger = logger.CreateLogger<Program>();
+    pLogger.LogError(e.Message);
 }
 
 

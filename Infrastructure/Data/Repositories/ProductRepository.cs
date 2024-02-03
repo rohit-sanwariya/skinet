@@ -22,6 +22,7 @@ public class ProductRepository(ApplicationDbContext context) : IProduct
         return await context.Products
         .Include(p => p.ProductBrand)
         .Include(p => p.ProductType)
+        .AsSplitQuery()
         .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -30,6 +31,7 @@ public class ProductRepository(ApplicationDbContext context) : IProduct
         return await context.Products
         .Include(p => p.ProductType)
         .Include(p => p.ProductBrand)
+        .AsSplitQuery()
         .ToListAsync();
     }
 
