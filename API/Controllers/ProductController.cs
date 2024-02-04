@@ -16,14 +16,16 @@ public class ProductController(
     [HttpGet]
     public async Task<ActionResult<List<Product>>> GetProductAsync()
     {
-        var  products = await productRepo.ListAllAsync();
-        return Ok(products);
+        var spec = new  ProductWithSpecificationAndBrands();
+        var  products = await productRepo.ListAsync(spec);
+        return Ok(products.OrderBy(p=>p.Id));
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Product>> GetProductById(int id)
     {
-        Product?  product = await productRepo.GetByIdAsync(id);
+        var spec = new  ProductWithSpecificationAndBrands((c)=>c.Id == id);
+        Product?  product = await productRepo.GetEntityWithSpec(spec);
         return product != null ? Ok(product) : NotFound();
     }
 
